@@ -3,6 +3,7 @@ import { TabBar } from './components/TabBar';
 import { SearchBar } from './components/SearchBar';
 import { LogViewer } from './components/LogViewer';
 import { StatusBar } from './components/StatusBar';
+import { JumpDialog } from './components/JumpDialog';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <SearchBar />
         <LogViewer />
         <StatusBar />
+        <JumpDialog />
       </div>
     </FileOpener>
   );
