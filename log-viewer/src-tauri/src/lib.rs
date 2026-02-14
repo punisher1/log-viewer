@@ -1,8 +1,10 @@
 mod models;
 mod storage;
+mod loader;
 
 pub use models::*;
 pub use storage::*;
+pub use loader::*;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
