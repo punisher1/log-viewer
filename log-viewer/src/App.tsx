@@ -1,9 +1,20 @@
+import { FileOpener } from './components/FileOpener';
+import { TabBar } from './components/TabBar';
+import { SearchBar } from './components/SearchBar';
+import { LogViewer } from './components/LogViewer';
+import { StatusBar } from './components/StatusBar';
+
 function App() {
   return (
-    <div className="h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-2xl font-bold">Log Viewer</h1>
-    </div>
-  )
+    <FileOpener>
+      <div className="h-screen flex flex-col bg-gray-900 text-white">
+        <TabBar />
+        <SearchBar />
+        <LogViewer />
+        <StatusBar />
+      </div>
+    </FileOpener>
+  );
 }
 
-export default App
+export default App;
