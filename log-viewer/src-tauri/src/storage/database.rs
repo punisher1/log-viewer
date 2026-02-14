@@ -1,5 +1,6 @@
 use rusqlite::{Connection, params};
 use std::path::PathBuf;
+use std::sync::Mutex;
 use crate::models::{FileIndex, FileEncoding, IndexStatus};
 use thiserror::Error;
 
@@ -9,10 +10,12 @@ pub enum StorageError {
     Database(#[from] rusqlite::Error),
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("Lock error")]
+    LockError,
 }
 
 pub struct Database {
-    conn: Connection,
+    conn: Mutex<Connection>,
 }
 
 impl Database {
@@ -20,13 +23,14 @@ impl Database {
         std::fs::create_dir_all(&app_data_dir)?;
         let db_path = app_data_dir.join("logviewer.db");
         let conn = Connection::open(db_path)?;
-        let db = Self { conn };
+        let db = Self { conn: Mutex::new(conn) };
         db.initialize()?;
         Ok(db)
     }
 
     fn initialize(&self) -> Result<(), StorageError> {
-        self.conn.execute(
+        let conn = self.conn.lock().map_err(|_| StorageError::LockError)?;
+        conn.execute(
             "CREATE TABLE IF NOT EXISTS file_indices (
                 path TEXT PRIMARY KEY,
                 total_lines INTEGER NOT NULL,
@@ -47,7 +51,8 @@ impl Database {
             .flat_map(|&v| v.to_le_bytes())
             .collect();
 
-        self.conn.execute(
+        let conn = self.conn.lock().map_err(|_| StorageError::LockError)?;
+        conn.execute(
             "INSERT OR REPLACE INTO file_indices
              (path, total_lines, line_offsets, file_size, encoding, file_mtime, indexed_at)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
@@ -70,7 +75,8 @@ impl Database {
     }
 
     pub fn get_index(&self, path: &str) -> Result<Option<FileIndex>, StorageError> {
-        let mut stmt = self.conn.prepare(
+        let conn = self.conn.lock().map_err(|_| StorageError::LockError)?;
+        let mut stmt = conn.prepare(
             "SELECT total_lines, line_offsets, file_size, encoding, indexed_at
              FROM file_indices WHERE path = ?1"
         )?;
@@ -131,7 +137,8 @@ impl Database {
     }
 
     pub fn delete_index(&self, path: &str) -> Result<(), StorageError> {
-        self.conn.execute("DELETE FROM file_indices WHERE path = ?1", params![path])?;
+        let conn = self.conn.lock().map_err(|_| StorageError::LockError)?;
+        conn.execute("DELETE FROM file_indices WHERE path = ?1", params![path])?;
         Ok(())
     }
 }
