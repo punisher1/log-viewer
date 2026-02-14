@@ -1,7 +1,7 @@
 import { useLogViewerStore } from '../../stores/logViewerStore';
 
 export function TabBar() {
-  const { openFiles, activeFileId, setActiveFile, closeFile } = useLogViewerStore();
+  const { openFiles, setActiveFile, closeFile } = useLogViewerStore();
 
   const files = Array.from(openFiles.values());
 

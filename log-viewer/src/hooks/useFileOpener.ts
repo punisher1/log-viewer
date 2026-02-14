@@ -26,6 +26,7 @@ export function useFileOpener() {
         id: path,
         path: meta.path,
         name: meta.name,
+        size: meta.size,
         totalLines: status.indexed ? status.totalLines : 0,
         isIndexed: status.indexed,
         isActive: true,

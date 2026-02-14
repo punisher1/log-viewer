@@ -55,12 +55,12 @@ export function LogViewer() {
   }, [activeFile?.path, loadContent]);
 
   // 处理滚动，实现按需加载
-  const handleScroll = useCallback(async (e: editor.IScrollEvent) => {
+  const handleScroll = useCallback(async () => {
     if (!activeFile || !editorRef.current || !monacoRef.current) return;
 
     const editor = editorRef.current;
     const monaco = monacoRef.current;
-    const scrollTop = e.scrollTop;
+    const scrollTop = editor.getScrollTop();
     const lineHeight = editor.getOption(monaco.editor.EditorOption.lineHeight);
     const visibleHeight = editor.getLayoutInfo().height;
 

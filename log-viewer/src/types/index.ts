@@ -30,6 +30,7 @@ export interface FileTab {
   id: string;
   path: string;
   name: string;
+  size: number;
   totalLines: number;
   isIndexed: boolean;
   isActive: boolean;
