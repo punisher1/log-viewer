@@ -14,12 +14,14 @@ export function useFileOpener() {
       const meta = await openFile(path);
 
       // 检查索引状态
-      const status = await getIndexStatus(path);
+      let status = await getIndexStatus(path);
 
       // 如果未索引，构建索引
       if (!status.indexed) {
         setLoading(true, '正在构建索引...');
         await buildIndex(path);
+        // 重新获取索引状态
+        status = await getIndexStatus(path);
       }
 
       const tab: FileTab = {
@@ -27,7 +29,7 @@ export function useFileOpener() {
         path: meta.path,
         name: meta.name,
         size: meta.size,
-        totalLines: status.indexed ? status.totalLines : 0,
+        totalLines: status.totalLines,
         isIndexed: status.indexed,
         isActive: true,
       };

@@ -25,6 +25,7 @@ interface LogViewerState {
   // 加载状态
   isLoading: boolean;
   loadingMessage: string;
+  error: string | null;
 
   // Actions
   openFile: (file: FileTab) => void;
@@ -44,6 +45,7 @@ interface LogViewerState {
   toggleHighlight: (id: string) => void;
 
   setLoading: (loading: boolean, message?: string) => void;
+  setError: (error: string | null) => void;
 }
 
 export const useLogViewerStore = create<LogViewerState>((set) => ({
@@ -62,6 +64,7 @@ export const useLogViewerStore = create<LogViewerState>((set) => ({
   highlights: [],
   isLoading: false,
   loadingMessage: '',
+  error: null,
 
   // Actions
   openFile: (file) =>
@@ -149,4 +152,6 @@ export const useLogViewerStore = create<LogViewerState>((set) => ({
 
   setLoading: (loading, message = '') =>
     set({ isLoading: loading, loadingMessage: message }),
+
+  setError: (error) => set({ error }),
 }));

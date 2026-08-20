@@ -30,6 +30,8 @@ impl FileLoader {
             return Err(LoaderError::NotFound(path.display().to_string()));
         }
 
+        let i = 1;
+
         let metadata = std::fs::metadata(path)?;
         let name = path.file_name()
             .map(|n| n.to_string_lossy().to_string())

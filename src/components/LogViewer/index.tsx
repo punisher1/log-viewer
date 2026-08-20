@@ -18,6 +18,10 @@ export function LogViewer() {
     scrollToLine,
     setVisibleRange,
     setLoading,
+    isLoading,
+    loadingMessage,
+    error,
+    setError,
   } = useLogViewerStore();
 
   const activeFile = activeFileId ? openFiles.get(activeFileId) : null;
@@ -28,16 +32,21 @@ export function LogViewer() {
   const loadContent = useCallback(async (path: string, start: number, count: number) => {
     if (!path) return;
     setLoading(true, '加载中...');
+    setError(null);
     try {
       const lines = await readLines(path, start, count);
+      if (!lines || lines.length === 0) {
+        setError('无法加载文件内容');
+      }
       return lines;
-    } catch (error) {
-      console.error('Failed to load lines:', error);
+    } catch (err) {
+      console.error('Failed to load lines:', err);
+      setError(err instanceof Error ? err.message : '加载文件失败');
       return [];
     } finally {
       setLoading(false);
     }
-  }, [setLoading]);
+  }, [setLoading, setError]);
 
   // 当活动文件变化时加载内容
   useEffect(() => {
@@ -165,6 +174,30 @@ export function LogViewer() {
         <div className="text-center">
           <p className="text-lg">拖拽文件到此处打开</p>
           <p className="text-sm mt-2">或使用 Ctrl+O 选择文件</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 显示错误状态
+  if (error) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-900 text-red-400">
+        <div className="text-center">
+          <p className="text-lg">加载失败</p>
+          <p className="text-sm mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 显示加载状态
+  if (isLoading || !loadedContent) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-900 text-gray-400">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-gray-500 border-t-blue-500 rounded-full mx-auto mb-4"></div>
+          <p className="text-lg">{loadingMessage || '加载中...'}</p>
         </div>
       </div>
     );

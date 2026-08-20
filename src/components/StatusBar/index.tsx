@@ -24,7 +24,7 @@ export function StatusBar() {
     <div className="h-6 bg-gray-800 border-t border-gray-700 px-4 flex items-center justify-between text-xs text-gray-400">
       <div className="flex items-center gap-4">
         <span>{activeFile.name}</span>
-        <span>{activeFile.totalLines.toLocaleString()} 行</span>
+        <span>{(activeFile.totalLines ?? 0).toLocaleString()} 行</span>
         <span>{formatFileSize(activeFile.size)}</span>
         <span>UTF-8</span>
       </div>
